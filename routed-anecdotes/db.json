@@ -15,11 +15,25 @@
       "id": "2"
     },
     {
-      "content": "طحخلت",
-      "author": "4فه",
-      "info": "ف4ف",
+      "content": "mostafa",
+      "author": "zahra",
+      "info": "nn",
       "votes": 0,
-      "id": "_KUsAQxM5CQ"
+      "id": "_GYT6aa4ycI"
+    },
+    {
+      "content": "dw",
+      "author": "lkn",
+      "info": "dw",
+      "votes": 0,
+      "id": "RWGs16XbsEE"
+    },
+    {
+      "content": "3هحخ",
+      "author": "ف4ف4ف",
+      "info": "ف4",
+      "votes": 0,
+      "id": "KSBpkt__JZc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

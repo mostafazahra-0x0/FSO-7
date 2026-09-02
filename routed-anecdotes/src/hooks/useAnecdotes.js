@@ -12,5 +12,11 @@ export const useAnecdotes = () => {
     const newAnecdote = await  anecdoteService.createNew(anecdote)
     setAnecdotes(anecdotes.concat(newAnecdote))
   }
-  return { anecdotes, addAnecdote }
+  
+  const deleteAnecdote = async (id) => {
+    await anecdoteService.deleteAnecdote(id)
+    setAnecdotes(anecdotes.filter(anecdote => anecdote.id !== id))
+  }
+
+  return { anecdotes, addAnecdote, deleteAnecdote }
 }
