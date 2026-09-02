@@ -7,5 +7,10 @@ export const useAnecdotes = () => {
   useEffect(() => {
     anecdoteService.getAll().then(data => setAnecdotes(data))
   }, [])
-  return { anecdotes }
+  
+  const addAnecdote = async (anecdote) => {
+    const newAnecdote = await  anecdoteService.createNew(anecdote)
+    setAnecdotes(anecdotes.concat(newAnecdote))
+  }
+  return { anecdotes, addAnecdote }
 }
