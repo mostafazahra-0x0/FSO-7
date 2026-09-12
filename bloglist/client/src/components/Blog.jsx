@@ -273,7 +273,7 @@ const Blog = ({ handleLike, handleDelete, user }) => {
         />
         <CommentButton type="submit">add comment</CommentButton>
       </CommentForm>
-      <AddedBy>added by {blog.user && blog.user.name}</AddedBy>
+      <AddedBy>added by {blog.user.name}</AddedBy>
 
       {showDeleteButton && (
         <RemoveButton onClick={() => handleDelete(blog)}>

@@ -58,6 +58,12 @@ const Likes = styled.span`
   font-variant-numeric: tabular-nums;
 `
 
+const Heading = styled.h2`
+  margin: 0 0 0.8em;
+  font-size: 1.5rem;
+  color: #1a1a2e;
+`
+
 const BlogList = () => {
   const result = useQuery({
     queryKey: ['blogs'],
@@ -67,7 +73,9 @@ const BlogList = () => {
   const { data: blogs = [] } = result
 
   return (
-    <List>
+    <>
+      <Heading>blogs</Heading>
+      <List>
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
@@ -80,7 +88,8 @@ const BlogList = () => {
             </Likes>
           </BlogCardLink>
         ))}
-    </List>
+      </List>
+    </>
   )
 }
 
