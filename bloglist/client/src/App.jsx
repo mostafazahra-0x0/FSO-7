@@ -9,6 +9,7 @@ import NavBar from './components/NavBar'
 import BlogForm from './components/BlogForm'
 import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
+import { useNotificationDispatch } from './contexts/NotificationContext'
 const Button = styled.button`
   background: Bisque;
   font-size: 1em;
@@ -36,9 +37,8 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
   const navigate = useNavigate()
+  const dispatch = useNotificationDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -58,14 +58,18 @@ const App = () => {
   const addBlog = async (blogObject) => {
     const returnedBlog = await blogService.create(blogObject)
     setBlogs((prevBlogs) => prevBlogs.concat(returnedBlog))
-    setSuccessMessage(
-      `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-    )
+    dispatch({
+      type: 'SET',
+      payload: {
+        message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+        variant: 'success',
+      },
+    })
     setTimeout(() => {
-      setSuccessMessage(null)
+      dispatch({ type: 'CLEAR' })
     }, 5000)
-    navigate('/')
   }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -77,9 +81,15 @@ const App = () => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       navigate('/')
     } catch {
-      setErrorMessage('Wrong credentials')
+      dispatch({
+        type: 'SET',
+        payload: {
+          message: 'Wrong credentials',
+          variant: 'error',
+        },
+      })
       setTimeout(() => {
-        setErrorMessage(null)
+        dispatch({ type: 'CLEAR' })
       }, 5000)
     }
   }
@@ -144,8 +154,7 @@ const App = () => {
     <div>
       <NavBar user={user} handleLogout={handleLogout} />
 
-      <Notification message={errorMessage} variant="error" />
-      <Notification message={successMessage} variant="success" />
+      <Notification />
       <ErrorBoundary>
         <Routes>
           <Route

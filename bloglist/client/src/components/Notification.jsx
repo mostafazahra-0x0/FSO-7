@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-
+import { useNotificationValue } from '../contexts/NotificationContext'
 const NotificationContainer = styled.div`
   background: ${(props) => (props.$variant === 'error' ? '#f8d7da' : '#d4edda')};
   color: ${(props) => (props.$variant === 'error' ? '#721c24' : '#155724')};
@@ -11,14 +11,15 @@ const NotificationContainer = styled.div`
   margin-bottom: 1em;
 `
 
-const Notification = ({ message, variant }) => {
-  if (message === null) {
+const Notification = () => {
+  const notification = useNotificationValue()
+  if (notification === null) {
     return null
   }
 
   return (
-    <NotificationContainer className="notification" $variant={variant}>
-      {message}
+    <NotificationContainer className="notification" $variant={notification.variant}>
+      {notification.message}
     </NotificationContainer>
   )
 }
