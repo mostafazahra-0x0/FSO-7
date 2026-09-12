@@ -53,6 +53,22 @@ const App = () => {
       )
     },
   })
+  const likeBlogMutation = useMutation({
+    mutationFn: ({ id, blog }) => blogService.update(id, blog),
+    onSuccess: (returnedBlog) => {
+      queryClient.setQueryData(['blogs'], (oldBlogs) =>
+        oldBlogs.map((b) => (b.id !== returnedBlog.id ? b : returnedBlog))
+      )
+    }
+  })
+  const deleteBlogMutation = useMutation({
+    mutationFn: (id) => blogService.remove(id),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(['blogs'], (oldBlogs) =>
+        oldBlogs.filter((b) => b.id !== id)
+      )
+    }
+  })
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
@@ -108,13 +124,18 @@ const App = () => {
     navigate('/')
   }
 
-  const handleLike = async () => {
-    // TODO: 7.13 — تحويلها لـ useMutation
-    console.log('like not yet implemented with React Query')
+  const handleLike = (blog) => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user && blog.user.id ? blog.user.id : blog.user,
+    }
+    likeBlogMutation.mutate({ id: blog.id, blog: updatedBlog })
   }
-  const handleDelete = async () => {
-    // TODO: 7.13 — تحويلها لـ useMutation
-    console.log('delete not yet implemented with React Query')
+  const handleDelete = (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      deleteBlogMutation.mutate(blog.id)
+    }
   }
   const loginForm = () => (
     <LoginFormDiv onSubmit={handleLogin}>
