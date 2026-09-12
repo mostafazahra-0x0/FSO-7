@@ -10,6 +10,8 @@ import BlogForm from './components/BlogForm'
 import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationDispatch } from './contexts/NotificationContext'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+
 const Button = styled.button`
   background: Bisque;
   font-size: 1em;
@@ -31,21 +33,26 @@ const LoginFormDiv = styled.form`
   align-items: center;
   align-self: center;
 `
-
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+  })
+  const { data: blogs = [] } = result
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
   const dispatch = useNotificationDispatch()
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      setBlogs(blogs)
-    })
-  }, [])
-
+  const queryClient = useQueryClient()
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (returnedBlog) => {
+      queryClient.setQueryData(['blogs'], (oldBlogs) =>
+        oldBlogs.concat(returnedBlog),
+      )
+    },
+  })
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
@@ -55,21 +62,22 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = async (blogObject) => {
-    const returnedBlog = await blogService.create(blogObject)
-    setBlogs((prevBlogs) => prevBlogs.concat(returnedBlog))
-    dispatch({
-      type: 'SET',
-      payload: {
-        message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
-        variant: 'success',
+  const addBlog = (blogObject) => {
+    newBlogMutation.mutate(blogObject, {
+      onSuccess: () => {
+        dispatch({
+          type: 'SET',
+          payload: {
+            message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+            variant: 'success',
+          },
+        })
+        setTimeout(() => {
+          dispatch({ type: 'CLEAR' })
+        }, 5000)
       },
     })
-    setTimeout(() => {
-      dispatch({ type: 'CLEAR' })
-    }, 5000)
   }
-
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -100,25 +108,14 @@ const App = () => {
     navigate('/')
   }
 
-  const handleLike = async (blog) => {
-    const updatedBlog = {
-      ...blog,
-      likes: blog.likes + 1,
-      user: blog.user && blog.user.id ? blog.user.id : blog.user,
-    }
-    const returnedBlog = await blogService.update(blog.id, updatedBlog)
-    setBlogs((prevBlogs) =>
-      prevBlogs.map((b) => (b.id !== blog.id ? b : returnedBlog)),
-    )
+  const handleLike = async () => {
+    // TODO: 7.13 — تحويلها لـ useMutation
+    console.log('like not yet implemented with React Query')
   }
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
-    }
+  const handleDelete = async () => {
+    // TODO: 7.13 — تحويلها لـ useMutation
+    console.log('delete not yet implemented with React Query')
   }
-
   const loginForm = () => (
     <LoginFormDiv onSubmit={handleLogin}>
       <div>
