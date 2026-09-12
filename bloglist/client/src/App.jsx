@@ -13,7 +13,7 @@ import Notification from './components/Notification'
 import NavBar from './components/NavBar'
 import BlogForm from './components/BlogForm'
 import styled from 'styled-components'
-
+import ErrorBoundary from './components/ErrorBoundary'
 const Button = styled.button`
   background: Bisque;
   font-size: 1em;
@@ -149,21 +149,22 @@ const App = () => {
 
       <Notification message={errorMessage} variant="error" />
       <Notification message={successMessage} variant="success" />
-
-      <Routes>
-        <Route path="/login" element={
-          user
-            ? <p>You are already logged in</p>
-            : loginForm()
-        } />
-        <Route path="/blogs/:id" element={
-          <Blog blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
-        } />
-        <Route path="/" element={
-          <BlogList blogs={blogs} />
-        } />
-        <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/login" element={
+            user
+              ? <p>You are already logged in</p>
+              : loginForm()
+          } />
+          <Route path="/blogs/:id" element={
+            <Blog blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
+          } />
+          <Route path="/" element={
+            <BlogList blogs={blogs} />
+          } />
+          <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+        </Routes>
+      </ErrorBoundary>
     </div>
   )
 }
