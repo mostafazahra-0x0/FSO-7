@@ -10,6 +10,7 @@ import BlogForm from './components/BlogForm'
 import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationDispatch } from './contexts/NotificationContext'
+import { useUserValue, useUserDispatch } from './contexts/UserContext'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 
 const Button = styled.button`
@@ -39,7 +40,8 @@ const App = () => {
     queryFn: blogService.getAll,
   })
   const { data: blogs = [] } = result
-  const [user, setUser] = useState(null)
+  const user = useUserValue()
+  const userDispatch = useUserDispatch()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
@@ -73,7 +75,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      userDispatch({ type: 'SET', payload: user })
       blogService.setToken(user.token)
     }
   }, [])
@@ -99,7 +101,7 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
       blogService.setToken(user.token)
-      setUser(user)
+      userDispatch({ type: 'SET', payload: user })
       setUsername('')
       setPassword('')
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
@@ -120,7 +122,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
-    setUser(null)
+    userDispatch({ type: 'CLEAR' })
     navigate('/')
   }
 
