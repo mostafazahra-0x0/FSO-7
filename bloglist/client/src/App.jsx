@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Routes, Route, useNavigate, useMatch } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
@@ -11,8 +11,9 @@ import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationDispatch } from './contexts/NotificationContext'
 import { useUserValue, useUserDispatch } from './contexts/UserContext'
+import persistentUser from './services/persistentUser'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-
+import useField from './hooks/useField'
 const Button = styled.button`
   background: Bisque;
   font-size: 1em;
@@ -42,8 +43,8 @@ const App = () => {
   const { data: blogs = [] } = result
   const user = useUserValue()
   const userDispatch = useUserDispatch()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const username = useField('text')
+  const password = useField('password')
   const navigate = useNavigate()
   const dispatch = useNotificationDispatch()
   const queryClient = useQueryClient()
@@ -72,9 +73,8 @@ const App = () => {
     }
   })
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+    const user = persistentUser.getUser()
+    if (user) {
       userDispatch({ type: 'SET', payload: user })
       blogService.setToken(user.token)
     }
@@ -99,13 +99,16 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password })
+      const user = await loginService.login({
+        username: username.value,
+        password: password.value,
+      })
       blogService.setToken(user.token)
       userDispatch({ type: 'SET', payload: user })
-      setUsername('')
-      setPassword('')
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      persistentUser.saveUser(user)
       navigate('/')
+      username.reset()
+      password.reset()
     } catch {
       dispatch({
         type: 'SET',
@@ -121,7 +124,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser')
+    persistentUser.removeUser()
     userDispatch({ type: 'CLEAR' })
     navigate('/')
   }
@@ -145,11 +148,11 @@ const App = () => {
         <label>
           username
           <Input
-            type="text"
-            value={username}
+            type={username.type}
+            value={username.value}
+            onChange={username.onChange}
             name="username"
             id="username"
-            onChange={({ target }) => setUsername(target.value)}
           />
         </label>
       </div>
@@ -157,11 +160,11 @@ const App = () => {
         <label>
           password
           <Input
-            type="password"
-            value={password}
+            type={password.type}
+            value={password.value}
+            onChange={password.onChange}
             name="password"
             id="password"
-            onChange={({ target }) => setPassword(target.value)}
           />
         </label>
       </div>
