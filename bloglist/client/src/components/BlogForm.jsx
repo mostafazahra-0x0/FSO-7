@@ -26,7 +26,7 @@ const BlogForm = ({ createBlog }) => {
     createBlog({
       title,
       author,
-      url
+      url,
     })
     setTitle('')
     setAuthor('')
@@ -42,7 +42,7 @@ const BlogForm = ({ createBlog }) => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder='write blog title here'
+            placeholder="write blog title here"
           />
         </label>
       </div>
@@ -53,7 +53,7 @@ const BlogForm = ({ createBlog }) => {
             type="text"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
-            placeholder='write author name here'
+            placeholder="write author name here"
           />
         </label>
       </div>
@@ -64,7 +64,7 @@ const BlogForm = ({ createBlog }) => {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder='write blog url here'
+            placeholder="write blog url here"
           />
         </label>
       </div>

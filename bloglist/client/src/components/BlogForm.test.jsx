@@ -23,6 +23,6 @@ test('<BlogForm /> calls createBlog with the right details when a new blog is cr
   expect(createBlog.mock.calls[0][0]).toEqual({
     title: 'Testing forms',
     author: 'Kent C. Dodds',
-    url: 'https://example.com'
+    url: 'https://example.com',
   })
 })

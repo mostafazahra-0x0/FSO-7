@@ -58,7 +58,7 @@ test('a blog can be added', async () => {
     .expect('Content-Type', /application\/json/)
   const blogAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogAtEnd.length, helper.initialBlogs.length + 1)
-  const titles = blogAtEnd.map(blog => blog.title)
+  const titles = blogAtEnd.map((blog) => blog.title)
   assert.ok(titles.includes('Test Blog'))
 })
 
@@ -93,13 +93,10 @@ test('adding a blog fails with 401 if token is not provided', async () => {
     title: 'Test blog without token',
     author: 'Someone',
     url: 'http://example.com',
-    likes: 0
+    likes: 0,
   }
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(401)
+  await api.post('/api/blogs').send(newBlog).expect(401)
 
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
@@ -127,7 +124,7 @@ test('a blog can be deleted', async () => {
     .expect(204)
 
   const blogAtEnd = await helper.blogsInDb()
-  const ids = blogAtEnd.map(b => b.id)
+  const ids = blogAtEnd.map((b) => b.id)
   assert.strictEqual(ids.includes(blogToDelete.id), false)
   assert.strictEqual(blogAtEnd.length, blogAtStart.length - 1)
 })
@@ -137,7 +134,7 @@ test('a blog can be updated', async () => {
   const blogToUpdate = blogsAtStart[0]
   const updatedBlog = {
     ...blogToUpdate,
-    likes: blogToUpdate.likes + 1
+    likes: blogToUpdate.likes + 1,
   }
   await api
     .put(`/api/blogs/${blogToUpdate.id}`)
@@ -145,7 +142,7 @@ test('a blog can be updated', async () => {
     .send(updatedBlog)
     .expect(200)
   const blogAtEnd = await helper.blogsInDb()
-  const updatedBlogAtEnd = blogAtEnd.find(b => b.id === blogToUpdate.id)
+  const updatedBlogAtEnd = blogAtEnd.find((b) => b.id === blogToUpdate.id)
   assert.strictEqual(updatedBlogAtEnd.likes, updatedBlog.likes)
 })
 

@@ -83,22 +83,25 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
     return null
   }
 
-  const showDeleteButton = user && blog.user && user.username === blog.user.username
+  const showDeleteButton =
+    user && blog.user && user.username === blog.user.username
 
   return (
-    <BlogCard className='blog'>
-      <Title>{blog.title} <Author>{blog.author}</Author></Title>
-      <Url href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</Url>
+    <BlogCard className="blog">
+      <Title>
+        {blog.title} <Author>{blog.author}</Author>
+      </Title>
+      <Url href={blog.url} target="_blank" rel="noopener noreferrer">
+        {blog.url}
+      </Url>
       <LikesRow>
         <span>likes {blog.likes}</span>
-        {user &&
-          <LikeButton onClick={() => handleLike(blog)}>like</LikeButton>
-        }
+        {user && <LikeButton onClick={() => handleLike(blog)}>like</LikeButton>}
       </LikesRow>
       <AddedBy>added by {blog.user && blog.user.name}</AddedBy>
-      {showDeleteButton &&
+      {showDeleteButton && (
         <RemoveButton onClick={() => handleDelete(blog)}>remove</RemoveButton>
-      }
+      )}
     </BlogCard>
   )
 }

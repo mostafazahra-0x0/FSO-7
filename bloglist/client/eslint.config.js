@@ -13,7 +13,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
-        sourceType: 'module'
+        sourceType: 'module',
       },
     },
     plugins: {
@@ -36,7 +36,7 @@ export default [
       'no-trailing-spaces': 'error',
       'object-curly-spacing': ['error', 'always'],
       'arrow-spacing': ['error', { before: true, after: true }],
-      'no-console': 'off'
+      'no-console': 'off',
     },
   },
 ]

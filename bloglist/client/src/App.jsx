@@ -1,10 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-  Routes,
-  Route,
-  useNavigate,
-  useMatch
-} from 'react-router-dom'
+import { Routes, Route, useNavigate, useMatch } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -46,7 +41,7 @@ const App = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    blogService.getAll().then(blogs => {
+    blogService.getAll().then((blogs) => {
       setBlogs(blogs)
     })
   }, [])
@@ -62,14 +57,16 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     const returnedBlog = await blogService.create(blogObject)
-    setBlogs(prevBlogs => prevBlogs.concat(returnedBlog))
-    setSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+    setBlogs((prevBlogs) => prevBlogs.concat(returnedBlog))
+    setSuccessMessage(
+      `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+    )
     setTimeout(() => {
       setSuccessMessage(null)
     }, 5000)
     navigate('/')
   }
-  const handleLogin = async event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
@@ -97,16 +94,18 @@ const App = () => {
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
-      user: blog.user && blog.user.id ? blog.user.id : blog.user
+      user: blog.user && blog.user.id ? blog.user.id : blog.user,
     }
     const returnedBlog = await blogService.update(blog.id, updatedBlog)
-    setBlogs(prevBlogs => prevBlogs.map(b => b.id !== blog.id ? b : returnedBlog))
+    setBlogs((prevBlogs) =>
+      prevBlogs.map((b) => (b.id !== blog.id ? b : returnedBlog)),
+    )
   }
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       await blogService.remove(blog.id)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+      setBlogs(blogs.filter((b) => b.id !== blog.id))
     }
   }
 
@@ -140,9 +139,7 @@ const App = () => {
     </LoginFormDiv>
   )
   const match = useMatch('/blogs/:id')
-  const blog = match
-    ? blogs.find(b => b.id === match.params.id)
-    : null
+  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
   return (
     <div>
       <NavBar user={user} handleLogout={handleLogout} />
@@ -151,17 +148,22 @@ const App = () => {
       <Notification message={successMessage} variant="success" />
       <ErrorBoundary>
         <Routes>
-          <Route path="/login" element={
-            user
-              ? <p>You are already logged in</p>
-              : loginForm()
-          } />
-          <Route path="/blogs/:id" element={
-            <Blog blog={blog} handleLike={handleLike} handleDelete={handleDelete} user={user} />
-          } />
-          <Route path="/" element={
-            <BlogList blogs={blogs} />
-          } />
+          <Route
+            path="/login"
+            element={user ? <p>You are already logged in</p> : loginForm()}
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              <Blog
+                blog={blog}
+                handleLike={handleLike}
+                handleDelete={handleDelete}
+                user={user}
+              />
+            }
+          />
+          <Route path="/" element={<BlogList blogs={blogs} />} />
           <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
           <Route path="*" element={<p>Page not found</p>} />
         </Routes>
