@@ -10,7 +10,10 @@ const getAll = () => {
   const request = axios.get(baseUrl)
   return request.then((response) => response.data)
 }
-
+const getById = (id) => {
+  const request = axios.get(`${baseUrl}/${id}`)
+  return request.then((response) => response.data)
+}
 const create = async (newObject) => {
   const config = {
     headers: { Authorization: token },
@@ -33,4 +36,8 @@ const remove = (id) => {
   }
   return axios.delete(`${baseUrl}/${id}`, config)
 }
-export default { getAll, setToken, create, update, remove }
+const addComment = (id, comment) => {
+  const request = axios.post(`${baseUrl}/${id}/comments`, { comment })
+  return request.then((response) => response.data)
+}
+export default { getAll, setToken, create, update, remove, getById, addComment }

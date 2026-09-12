@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import styled from 'styled-components'
 import blogService from '../services/blogs'
-
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 const BlogCard = styled.div`
   background: #fff;
   border: 1px solid #e0e0e0;
@@ -83,12 +83,24 @@ const RemoveButton = styled.button`
 
 const Blog = ({ handleLike, handleDelete, user }) => {
   const { id } = useParams()
+  const [comment, setComment] = useState('')
+  const queryClient = useQueryClient()
+  const addCommentMutation = useMutation({
+    mutationFn: ({ id, comment }) => blogService.addComment(id, comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs', id] })
+    },
+  })
+
+  const handleAddComment = (event) => {
+    event.preventDefault()
+    addCommentMutation.mutate({ id, comment })
+    setComment('')
+  }
 
   const result = useQuery({
     queryKey: ['blogs', id],
-    queryFn: () => blogService.getAll().then(blogs =>
-      blogs.find((blog) => blog.id === id)
-    ),
+    queryFn: () => blogService.getById(id),
   })
 
   const blog = result.data
@@ -128,6 +140,14 @@ const Blog = ({ handleLike, handleDelete, user }) => {
           <li key={index}>{comment}</li>
         ))}
       </ul>
+      <form onSubmit={handleAddComment}>
+        <input
+          value={comment}
+          onChange={(event) => setComment(event.target.value)}
+          placeholder="add a comment"
+        />
+        <button type="submit">add comment</button>
+      </form>
       <AddedBy>added by {blog.user && blog.user.name}</AddedBy>
 
       {showDeleteButton && (
