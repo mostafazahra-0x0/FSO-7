@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import blogService from '../services/blogs'
 
-const BlogList = ({ blogs }) => {
+const BlogList = () => {
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+  })
+
+  const { data: blogs = [] } = result
+
   return (
     <div>
       {[...blogs]

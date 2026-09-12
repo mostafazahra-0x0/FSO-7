@@ -69,6 +69,7 @@ const NavBar = ({ user, handleLogout }) => {
       ) : (
         <>
           <NavLink to="/create">create new</NavLink>
+          <NavLink to="/users">users</NavLink>
           <Spacer>
             <UserName>{user.name} logged in</UserName>
             <LogoutButton onClick={handleLogout}>logout</LogoutButton>

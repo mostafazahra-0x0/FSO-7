@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, useNavigate, useMatch } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -7,12 +7,13 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import NavBar from './components/NavBar'
 import BlogForm from './components/BlogForm'
+import Users from './components/Users'
 import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationDispatch } from './contexts/NotificationContext'
 import { useUserValue, useUserDispatch } from './contexts/UserContext'
 import persistentUser from './services/persistentUser'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import useField from './hooks/useField'
 const Button = styled.button`
   background: Bisque;
@@ -36,11 +37,6 @@ const LoginFormDiv = styled.form`
   align-self: center;
 `
 const App = () => {
-  const result = useQuery({
-    queryKey: ['blogs'],
-    queryFn: blogService.getAll,
-  })
-  const { data: blogs = [] } = result
   const user = useUserValue()
   const userDispatch = useUserDispatch()
   const username = useField('text')
@@ -50,26 +46,20 @@ const App = () => {
   const queryClient = useQueryClient()
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
-    onSuccess: (returnedBlog) => {
-      queryClient.setQueryData(['blogs'], (oldBlogs) =>
-        oldBlogs.concat(returnedBlog),
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
   })
   const likeBlogMutation = useMutation({
     mutationFn: ({ id, blog }) => blogService.update(id, blog),
-    onSuccess: (returnedBlog) => {
-      queryClient.setQueryData(['blogs'], (oldBlogs) =>
-        oldBlogs.map((b) => (b.id !== returnedBlog.id ? b : returnedBlog))
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
     }
   })
   const deleteBlogMutation = useMutation({
     mutationFn: (id) => blogService.remove(id),
-    onSuccess: (_, id) => {
-      queryClient.setQueryData(['blogs'], (oldBlogs) =>
-        oldBlogs.filter((b) => b.id !== id)
-      )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
     }
   })
   useEffect(() => {
@@ -171,8 +161,6 @@ const App = () => {
       <Button type="submit">login</Button>
     </LoginFormDiv>
   )
-  const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
   return (
     <div>
       <NavBar user={user} handleLogout={handleLogout} />
@@ -188,15 +176,15 @@ const App = () => {
             path="/blogs/:id"
             element={
               <Blog
-                blog={blog}
                 handleLike={handleLike}
                 handleDelete={handleDelete}
                 user={user}
               />
             }
           />
-          <Route path="/" element={<BlogList blogs={blogs} />} />
+          <Route path="/" element={<BlogList />} />
           <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+          <Route path="/users" element={<Users />} />
           <Route path="*" element={<p>Page not found</p>} />
         </Routes>
       </ErrorBoundary>

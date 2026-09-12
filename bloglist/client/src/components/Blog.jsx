@@ -1,4 +1,7 @@
+import { useParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import styled from 'styled-components'
+import blogService from '../services/blogs'
 
 const BlogCard = styled.div`
   background: #fff;
@@ -78,9 +81,24 @@ const RemoveButton = styled.button`
   }
 `
 
-const Blog = ({ blog, handleLike, handleDelete, user }) => {
+const Blog = ({ handleLike, handleDelete, user }) => {
+  const { id } = useParams()
+
+  const result = useQuery({
+    queryKey: ['blogs', id],
+    queryFn: () => blogService.getAll().then(blogs =>
+      blogs.find((blog) => blog.id === id)
+    ),
+  })
+
+  const blog = result.data
+
+  if (result.isLoading) {
+    return <div>loading...</div>
+  }
+
   if (!blog) {
-    return null
+    return <div>Blog not found</div>
   }
 
   const showDeleteButton =
@@ -91,16 +109,26 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
       <Title>
         {blog.title} <Author>{blog.author}</Author>
       </Title>
+
       <Url href={blog.url} target="_blank" rel="noopener noreferrer">
         {blog.url}
       </Url>
+
       <LikesRow>
         <span>likes {blog.likes}</span>
-        {user && <LikeButton onClick={() => handleLike(blog)}>like</LikeButton>}
+        {user && (
+          <LikeButton onClick={() => handleLike(blog)}>
+            like
+          </LikeButton>
+        )}
       </LikesRow>
+
       <AddedBy>added by {blog.user && blog.user.name}</AddedBy>
+
       {showDeleteButton && (
-        <RemoveButton onClick={() => handleDelete(blog)}>remove</RemoveButton>
+        <RemoveButton onClick={() => handleDelete(blog)}>
+          remove
+        </RemoveButton>
       )}
     </BlogCard>
   )
