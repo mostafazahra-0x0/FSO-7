@@ -32,6 +32,12 @@ const Url = styled.a`
   &:hover {
     text-decoration: underline;
   }
+
+  &:focus-visible {
+    outline: 2px solid #4361ee;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 `
 
 const LikesRow = styled.div`
@@ -57,10 +63,17 @@ const LikeButton = styled.button`
   &:hover {
     background: #c73650;
   }
+
+  &:focus-visible {
+    outline: 2px solid #1a1a2e;
+    outline-offset: 2px;
+  }
 `
 
 const AddedBy = styled.div`
-  color: #888;
+  // #888 on white is ~3.9:1 and fails AA for small text,
+  // so muted meta uses #555 while #888 is kept for placeholders/borders.
+  color: #555;
   font-size: 0.85rem;
   margin-bottom: 1em;
 `
@@ -79,6 +92,114 @@ const RemoveButton = styled.button`
     background: #e94560;
     color: white;
   }
+
+  &:focus-visible {
+    outline: 2px solid #4361ee;
+    outline-offset: 2px;
+  }
+`
+
+const CommentsHeading = styled.h3`
+  margin: 1.2em 0 0.6em;
+  font-size: 1.1rem;
+  color: #1a1a2e;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1em;
+`
+
+const CommentList = styled.ul`
+  list-style: none;
+  margin: 0 0 1em;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+`
+
+const CommentItem = styled.li`
+  background: #f6f6f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.6em 0.9em;
+  font-size: 0.95rem;
+  color: #333;
+`
+
+// Row layout keeps input + button on one line on desktop,
+// wraps to stacked on narrow screens via flex-wrap.
+const CommentForm = styled.form`
+  display: flex;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1.2em;
+`
+
+const CommentInput = styled.input`
+  flex: 1;
+  min-width: 200px;
+  font-size: 0.95rem;
+  padding: 0.55em 0.9em;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  color: #1a1a2e;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: #888;
+  }
+
+  &:hover {
+    border-color: #bdbdc9;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.18);
+  }
+`
+
+// Mirrors LikeButton: solid #e94560 pill, darkens to #c73650 on hover.
+const CommentButton = styled.button`
+  background: #e94560;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.55em 1.2em;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #c73650;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1a1a2e;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`
+
+// Visually hidden but screen-reader accessible label so the
+// input stays labelled without adding visual clutter above the form.
+const ScreenReaderLabel = styled.label`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 `
 
 const Blog = ({ handleLike, handleDelete, user }) => {
@@ -134,20 +255,24 @@ const Blog = ({ handleLike, handleDelete, user }) => {
           </LikeButton>
         )}
       </LikesRow>
-      <h3>comments</h3>
-      <ul>
+      <CommentsHeading>comments</CommentsHeading>
+      <CommentList>
         {blog.comments?.map((comment, index) => (
-          <li key={index}>{comment}</li>
+          <CommentItem key={index}>{comment}</CommentItem>
         ))}
-      </ul>
-      <form onSubmit={handleAddComment}>
-        <input
+      </CommentList>
+      <CommentForm onSubmit={handleAddComment}>
+        <ScreenReaderLabel htmlFor="comment-input">
+          Add a comment
+        </ScreenReaderLabel>
+        <CommentInput
+          id="comment-input"
           value={comment}
           onChange={(event) => setComment(event.target.value)}
           placeholder="add a comment"
         />
-        <button type="submit">add comment</button>
-      </form>
+        <CommentButton type="submit">add comment</CommentButton>
+      </CommentForm>
       <AddedBy>added by {blog.user && blog.user.name}</AddedBy>
 
       {showDeleteButton && (

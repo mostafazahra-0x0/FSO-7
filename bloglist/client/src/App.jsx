@@ -16,26 +16,85 @@ import { useUserValue, useUserDispatch } from './contexts/UserContext'
 import persistentUser from './services/persistentUser'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import useField from './hooks/useField'
+// Primary action: solid #e94560 pill, darkens to #c73650 on hover —
+// the same interaction language as LikeButton in Blog.jsx.
 const Button = styled.button`
-  background: Bisque;
-  font-size: 1em;
-  margin: 1em;
-  padding: 0.25em 1em;
-  border: 2px solid Chocolate;
-  border-radius: 10px;
+  background: #e94560;
+  color: white;
+  font-size: 0.9em;
+  font-weight: 600;
+  margin: 1em 0 0;
+  padding: 0.55em 1.4em;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #c73650;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #1a1a2e;
+    outline-offset: 2px;
+  }
 `
 
 const Input = styled.input`
-  background: Bisque;
+  font-size: 0.95rem;
   margin: 0.25em;
-  padding: 5px;
-  border-radius: 5px;
+  padding: 0.55em 0.9em;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  color: #1a1a2e;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder {
+    color: #888;
+  }
+
+  &:hover {
+    border-color: #bdbdc9;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.18);
+  }
 `
-const LoginFormDiv = styled.form`
+
+// Centers the app column and caps line length for readability.
+const Page = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1.2em 3em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  color: #1a1a2e;
+`
+
+const LoginCard = styled.form`
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5em 2em;
+  max-width: 420px;
+  margin: 2em auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  align-self: center;
+  gap: 0.8em;
+`
+
+const FieldLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
 `
 const App = () => {
   const user = useUserValue()
@@ -134,36 +193,32 @@ const App = () => {
     }
   }
   const loginForm = () => (
-    <LoginFormDiv onSubmit={handleLogin}>
-      <div>
-        <label>
-          username
-          <Input
-            type={username.type}
-            value={username.value}
-            onChange={username.onChange}
-            name="username"
-            id="username"
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <Input
-            type={password.type}
-            value={password.value}
-            onChange={password.onChange}
-            name="password"
-            id="password"
-          />
-        </label>
-      </div>
+    <LoginCard onSubmit={handleLogin}>
+      <FieldLabel htmlFor="username">
+        username
+        <Input
+          type={username.type}
+          value={username.value}
+          onChange={username.onChange}
+          name="username"
+          id="username"
+        />
+      </FieldLabel>
+      <FieldLabel htmlFor="password">
+        password
+        <Input
+          type={password.type}
+          value={password.value}
+          onChange={password.onChange}
+          name="password"
+          id="password"
+        />
+      </FieldLabel>
       <Button type="submit">login</Button>
-    </LoginFormDiv>
+    </LoginCard>
   )
   return (
-    <div>
+    <Page>
       <NavBar user={user} handleLogout={handleLogout} />
 
       <Notification />
@@ -190,7 +245,7 @@ const App = () => {
           <Route path="*" element={<p>Page not found</p>} />
         </Routes>
       </ErrorBoundary>
-    </div>
+    </Page>
   )
 }
 
