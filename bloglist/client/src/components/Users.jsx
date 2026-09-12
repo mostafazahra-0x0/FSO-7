@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import styled from 'styled-components'
 import userService from '../services/users'
-
+import { Link } from 'react-router-dom'
 const Table = styled.table`
   border-collapse: collapse;
   width: 100%;
@@ -43,8 +43,11 @@ const Users = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <Td>{user.name}</Td>
-              <Td>{user.blogs.length}</Td>
+              <Td>
+                <Link to={`/users/${user.id}`}>
+                  {user.name}
+                </Link>
+              </Td>              <Td>{user.blogs.length}</Td>
             </tr>
           ))}
         </tbody>

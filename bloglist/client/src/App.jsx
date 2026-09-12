@@ -8,6 +8,7 @@ import Notification from './components/Notification'
 import NavBar from './components/NavBar'
 import BlogForm from './components/BlogForm'
 import Users from './components/Users'
+import User from './components/User'
 import styled from 'styled-components'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationDispatch } from './contexts/NotificationContext'
@@ -185,6 +186,7 @@ const App = () => {
           <Route path="/" element={<BlogList />} />
           <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
           <Route path="*" element={<p>Page not found</p>} />
         </Routes>
       </ErrorBoundary>
